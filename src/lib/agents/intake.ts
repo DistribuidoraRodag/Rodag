@@ -27,7 +27,8 @@ function getMockOutput(): IntakeOutput {
 }
 
 export async function runIntakeAgent(
-  message: string
+  message: string,
+  businessContext?: string
 ): Promise<AgentResult<IntakeOutput>> {
   // Mock mode when API key is not available
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -48,7 +49,7 @@ export async function runIntakeAgent(
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 1024,
-      system: INTAKE_PROMPT,
+      system: businessContext ? `${INTAKE_PROMPT}\n\n${businessContext}` : INTAKE_PROMPT,
       messages: [{ role: "user", content: message }],
     });
 

@@ -38,7 +38,8 @@ function getMockOutput(intakeOutput: IntakeOutput): BriefingOutput {
 
 export async function runBriefingAgent(
   messages: { role: string; content: string }[],
-  intakeOutput: IntakeOutput
+  intakeOutput: IntakeOutput,
+  businessContext?: string
 ): Promise<AgentResult<BriefingOutput>> {
   // Mock mode when API key is not available
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -68,7 +69,7 @@ export async function runBriefingAgent(
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 2048,
-      system: BRIEFING_PROMPT,
+      system: businessContext ? `${BRIEFING_PROMPT}\n\n${businessContext}` : BRIEFING_PROMPT,
       messages: [{ role: "user", content: userContent }],
     });
 

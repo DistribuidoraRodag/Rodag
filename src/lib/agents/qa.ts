@@ -28,7 +28,8 @@ function getMockOutput(): QAOutput {
 export async function runQAAgent(
   briefing: BriefingOutput,
   copy: StrategyCopyOutput,
-  creative: CreativeOutput | null
+  creative: CreativeOutput | null,
+  businessContext?: string
 ): Promise<AgentResult<QAOutput>> {
   // Mock mode when API key is not available
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -57,7 +58,7 @@ export async function runQAAgent(
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 1024,
-      system: QA_PROMPT,
+      system: businessContext ? `${QA_PROMPT}\n\n${businessContext}` : QA_PROMPT,
       messages: [{ role: "user", content: parts.join("\n\n") }],
     });
 

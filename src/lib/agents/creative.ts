@@ -46,7 +46,8 @@ function getMockOutput(
 
 export async function runCreativeAgent(
   briefing: BriefingOutput,
-  copy: StrategyCopyOutput
+  copy: StrategyCopyOutput,
+  businessContext?: string
 ): Promise<AgentResult<CreativeOutput>> {
   // Mock mode when API key is not available
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -67,7 +68,7 @@ export async function runCreativeAgent(
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 2048,
-      system: CREATIVE_PROMPT,
+      system: businessContext ? `${CREATIVE_PROMPT}\n\n${businessContext}` : CREATIVE_PROMPT,
       messages: [
         {
           role: "user",

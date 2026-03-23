@@ -30,7 +30,8 @@ function getMockOutput(briefing: BriefingOutput): StrategyCopyOutput {
 }
 
 export async function runStrategyCopyAgent(
-  briefing: BriefingOutput
+  briefing: BriefingOutput,
+  businessContext?: string
 ): Promise<AgentResult<StrategyCopyOutput>> {
   // Mock mode when API key is not available
   if (!process.env.OPENAI_API_KEY) {
@@ -53,7 +54,7 @@ export async function runStrategyCopyAgent(
       max_tokens: 2048,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: STRATEGY_COPY_PROMPT },
+        { role: "system", content: businessContext ? `${STRATEGY_COPY_PROMPT}\n\n${businessContext}` : STRATEGY_COPY_PROMPT },
         {
           role: "user",
           content: `Briefing estruturado:\n${JSON.stringify(briefing, null, 2)}`,
