@@ -8,6 +8,9 @@ import {
   History,
   LogOut,
   Zap,
+  Shield,
+  AlertTriangle,
+  ScrollText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -23,6 +26,7 @@ import {
   SidebarInset,
   SidebarTrigger,
   SidebarSeparator,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/actions/auth";
@@ -43,6 +47,24 @@ const navItems = [
     title: "Historico",
     href: "/historico",
     icon: History,
+  },
+];
+
+const adminNavItems = [
+  {
+    title: "Painel Admin",
+    href: "/admin",
+    icon: Shield,
+  },
+  {
+    title: "Revisao Humana",
+    href: "/admin/revisao",
+    icon: AlertTriangle,
+  },
+  {
+    title: "Auditoria",
+    href: "/admin/auditoria",
+    icon: ScrollText,
   },
 ];
 
@@ -78,6 +100,30 @@ export function DashboardShell({
                     item.href === "/dashboard"
                       ? pathname === "/dashboard" && !pathname.includes("nova")
                       : pathname.startsWith(item.href.split("?")[0]);
+
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                        <Link href={item.href}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarSeparator />
+
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminNavItems.map((item) => {
+                  const isActive = pathname.startsWith(item.href);
 
                   return (
                     <SidebarMenuItem key={item.title}>
