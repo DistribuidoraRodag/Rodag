@@ -11,6 +11,10 @@ import {
   Shield,
   AlertTriangle,
   ScrollText,
+  Sparkles,
+  CheckSquare,
+  BookOpen,
+  BarChart3,
 } from "lucide-react";
 import {
   Sidebar,
@@ -32,23 +36,28 @@ import { Button } from "@/components/ui/button";
 import { signOut } from "@/actions/auth";
 import type { Tables } from "@/types/database";
 
-const navItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Nova Solicitacao",
-    href: "/dashboard?nova=1",
-    icon: Plus,
-  },
-  {
-    title: "Historico",
-    href: "/historico",
-    icon: History,
-  },
+// Role-based navigation
+const commonItems = [
+  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 ];
+
+const mktItems = [
+  { title: "Gerar Conteudo", href: "/gerar", icon: Sparkles },
+  { title: "Aprovacao", href: "/aprovacao", icon: CheckSquare },
+  { title: "Biblioteca", href: "/biblioteca", icon: BookOpen },
+  { title: "Analytics", href: "/analytics", icon: BarChart3 },
+];
+
+const clientItems = [
+  { title: "Biblioteca", href: "/biblioteca", icon: BookOpen },
+  { title: "Nova Solicitacao", href: "/chat/novo", icon: Plus },
+  { title: "Historico", href: "/historico", icon: History },
+];
+
+function getNavItems(role: string) {
+  if (role === "admin" || role === "manager") return [...commonItems, ...mktItems];
+  return [...commonItems, ...clientItems];
+}
 
 const adminNavItems = [
   {
@@ -76,6 +85,8 @@ export function DashboardShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const role = profile?.role || "client";
+  const navItems = getNavItems(role);
 
   return (
     <SidebarProvider>
@@ -98,8 +109,8 @@ export function DashboardShell({
                 {navItems.map((item) => {
                   const isActive =
                     item.href === "/dashboard"
-                      ? pathname === "/dashboard" && !pathname.includes("nova")
-                      : pathname.startsWith(item.href.split("?")[0]);
+                      ? pathname === "/dashboard"
+                      : pathname.startsWith(item.href);
 
                   return (
                     <SidebarMenuItem key={item.title}>
@@ -116,6 +127,7 @@ export function DashboardShell({
             </SidebarGroupContent>
           </SidebarGroup>
 
+          {role === "admin" && <>
           <SidebarSeparator />
 
           <SidebarGroup>
@@ -139,6 +151,7 @@ export function DashboardShell({
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+          </>}
         </SidebarContent>
 
         <SidebarSeparator />

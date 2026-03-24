@@ -1,0 +1,44 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Nao autenticado" }, { status: 401 });
+
+  const admin = createAdminClient();
+  const { data: profile } = await (admin as any).from("profiles").select("role").eq("id", user.id).single();
+  if (profile?.role !== "admin") return NextResponse.json({ error: "Apenas admin pode aprovar" }, { status: 403 });
+
+  const body = await request.json().catch(() => ({}));
+
+  const { error: updateError } = await (admin as any).from("content").update({
+    status: "aprovado",
+    approved_by: user.id,
+    approved_at: new Date().toISOString(),
+  }).eq("id", id);
+
+  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+
+  await (admin as any).from("approval_history").insert({
+    content_id: id, action: "approved", acted_by: user.id, notes: body.notes || null,
+  });
+
+  const { data: content } = await (admin as any).from("content").select("created_by, title").eq("id", id).single();
+  if (content?.created_by) {
+    await (admin as any).from("notifications").insert({
+      user_id: content.created_by,
+      title: "Conteudo aprovado",
+      message: `Seu conteudo "${content.title}" foi aprovado.`,
+      type: "success",
+      link: `/biblioteca`,
+    });
+  }
+
+  return NextResponse.json({ success: true });
+}
