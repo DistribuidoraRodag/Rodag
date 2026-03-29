@@ -22,6 +22,8 @@ export default function GerarClient() {
     topic: "",
     tone: "profissional",
     output_level: 3,
+    icp: "",
+    funnel_stage: "awareness",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -109,6 +111,35 @@ export default function GerarClient() {
                 placeholder="Ex: Cubo redutor Scania R450 em estoque com preco especial"
                 rows={3}
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>ICP (Publico-Alvo)</Label>
+                <Select value={form.icp || ""} onValueChange={v => setForm(f => ({ ...f, icp: v }))}>
+                  <SelectTrigger><SelectValue placeholder="Selecione o ICP" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="oficinas">Oficinas Mecanicas</SelectItem>
+                    <SelectItem value="transportadoras">Transportadoras</SelectItem>
+                    <SelectItem value="frotistas">Frotistas</SelectItem>
+                    <SelectItem value="lojistas">Lojistas de Autopecas</SelectItem>
+                    <SelectItem value="geral">Todos os segmentos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Etapa do Funil</Label>
+                <Select value={form.funnel_stage} onValueChange={v => setForm(f => ({ ...f, funnel_stage: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="awareness">Awareness (Descoberta)</SelectItem>
+                    <SelectItem value="interest">Interest (Interesse)</SelectItem>
+                    <SelectItem value="consideration">Consideration (Comparacao)</SelectItem>
+                    <SelectItem value="conversion">Conversion (Compra)</SelectItem>
+                    <SelectItem value="retention">Retention (Pos-venda)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
